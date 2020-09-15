@@ -34,15 +34,15 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 <h3>체크포인트 구현</h3>
 
 ><h4>1. SAGA</h4>
->+ 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌.
->+ 요리가 취소되는 경우 주문도 함께 취소 처리.
+>+ 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌  
+>+ 요리가 취소되는 경우 주문도 함께 취소 처리
 
 ><h4>2. CQRS</h4>
 >+ 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
 
 
 ><h4>3. Correlation</h4>
->+ 주문(Order) > 요리(Cook) : menu
+>+ 주문(Order) > 요리(Cook) : menu  
 >+ 요리(Cook) > 배달(Delivery) : cook
 
 
@@ -95,7 +95,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 --> DockerBuild --> ECR 업�
 
 
 ><h4> 10. PersistenceVolume</h4>
->+ 각 Microservice의 Log를 기록하기 위해 사용
+>+ 각 Microservice의 Log를 기록하기 위해 사용  
 >+ PVC 사용을 위한 yaml 세팅
 ![PVC  yaml Setting](https://user-images.githubusercontent.com/54210936/93169153-711e8200-f75f-11ea-901d-d168a01284a3.jpg)
 
