@@ -31,11 +31,21 @@
   5. 배달시작됨
   
 ><h4>1. SAGA</h4>
-><h4>2. CQRS</h4>
-><h4>3. Correlation</h4>
-><h4>4. Request/Response</h4>
-><h4>5. Gateway</h4>
+- 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌.
+- 요리가 취소되는 경우 주문도 함께 취소 처리.
 
+><h4>2. CQRS</h4>
+- 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
+
+><h4>3. Correlation</h4>
+- 주문(Order) > 요리(Cook) : menu
+- 요리(Cook) > 배달(Delivery) : cook
+
+><h4>4. Request/Response</h4>
+- 주문(Order) 취소시 Req/Res 형태로 연결
+
+><h4>5. Gateway</h4>
+- Gateway 접속으로 각 Microservice의 접근 루트를 통일
 
  ><h4>6. Deploy / Pipeline</h4>
 AWS 코드빌더를 통한 CI/CD 구축.
@@ -63,7 +73,7 @@ Image upload
 Image Change
 ![ZeroDownTime  console - pod change status](https://user-images.githubusercontent.com/54210936/93168822-bbebca00-f75e-11ea-8cf0-ab28fbddf6dd.jpg)
 
-Image 변경 중 부하 발생                                                                           
+Image 변경 중 부하 발생                                                                                                                                                      
 ![ZeroDownTime  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93168826-bd1cf700-f75e-11ea-801d-c83912df06b4.jpg)
 
 Image 변경적용 확인
