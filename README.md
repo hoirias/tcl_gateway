@@ -92,6 +92,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 * 주문(Order)에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. CPU 사용률이 10% 초과시 Replica를 5까지 늘리도록 설정 함.
 
 <pre><code>
+    ##CircuitBreaker 설정
     http:
         http1MaxPendingRequests: 1  # 연결을 기다리는 request 수를 1개로 제한 (Default 
         maxRequestsPerConnection: 1 # keep alive 기능 disable
@@ -102,8 +103,22 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
       maxEjectionPercent: 100       # 100% 로 차단
 </code></pre>
 
->+ CircuitBreaker 설정 값
-![Circuit Breaker  yaml Setting](https://user-images.githubusercontent.com/54210936/93168671-68797c00-f75e-11ea-926d-6de0dd8acffd.jpg)
+<pre><code>
+    ##HPA 설정 설정
+    cat <<EOF | kubectl apply -f -
+    apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+     name: skcchpa-order
+     namespace: teamc
+     spec:
+      scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: $_PROJECT_NAME            # order (주문) 서비스 HPA 설정
+      minReplicas: 3                 # 최소 3개
+      maxReplicas: 5                 # 최대 5개
+</code></pre>
 
 >+ 부하적용 전
 ![ZeroDownTime_HPA  AS-IS STATUS](https://user-images.githubusercontent.com/54210936/93167881-8d6cef80-f75c-11ea-853b-a3734f7af356.jpg)
