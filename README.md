@@ -7,7 +7,7 @@
   2. 요리가 완료되면 배달이 시작된다.</br>
   3. 고객이 주문취소를 하게 되면 요리가 취소된다.</br>   
   4. 고객이 주문 시 제고가 없을 경우 주문이 취소된다.</br>   
-  5. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.</br>   
+  5. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.</br> </br>  
 
 
 <h4>비기능적 요구사항</h4>
@@ -16,12 +16,13 @@
   2. 장애격리</br>
     : 주문 시스템에 장애가 발생하면 주문은 잠시뒤에 처리될 수 있도록 한다(Circuit breaker)</br>
   3. 성능</br>
-    : 고객이 mypage를 통해 주문과 요리, 배달의 전체 상황을 조회할수 있다(CQRS)</br>
+    : 고객이 mypage를 통해 주문과 요리, 배달의 전체 상황을 조회할수 있다(CQRS)</br></br>
 
 
 <h4>MSAEz 로 모델링한 이벤트스토밍 결과</h4>  
-http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F   
+http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F   </br>
 ![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93165941-4bda4580-f758-11ea-9195-bc577796b8d0.png)
+</br>
 
 
 <h4>이벤트도출</h4>
@@ -30,14 +31,14 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
   3. 요리재고체크됨</br>
   4. 요리시작됨</br>
   5. 배달시작됨</br>
-
+</br>
 <h3>개발 현황</h3>
 1. 프로그램 개발 후 github에 commit</br>
 2. AWS codebuild 세팅에 따라 컴파일 후 Docker build, ECR 저장 및 Deploy(EKS)</br>
 3. Matrix-Server를 설치. Autoscale 적용</br>
 4. 각 Microservice에서 동작하며 EFS에 log 파일을 기록</br>
 5. 각 Microservice는 kafka와 RestAPI로 통신</br>
-
+</br>
 * Region : ap-northeast-2</br>
 * EKS : TeamC-final</br>
 * ECR Image :   
@@ -59,7 +60,7 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
     https://github.com/dew0327/final-cna-delivery/</br>
     https://github.com/dew0327/final-cna-mypage/</br>
     https://github.com/dew0327/final-cna-gateway/ </br>
-
+</br>
 
 <h3>체크포인트 구현</h3>
 
