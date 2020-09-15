@@ -2,7 +2,7 @@
 
 <h3>서비스 시나리오</h3>
 
-  > <h4>기능적 요구사항</h4>
+<h4>기능적 요구사항</h4>
   1. 고객이 주문을 하면 주문정보를 바탕으로 요리가 시작된다.
   2. 요리가 완료되면 배달이 시작된다. 
   3. 고객이 주문취소를 하게 되면 요리가 취소된다.
@@ -10,7 +10,7 @@
   5. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.
 
 
-  > <h4>비기능적 요구사항</h4>
+<h4>비기능적 요구사항</h4>
   1. 트랜잭션
     : 주문 취소시 요리취소가 함께 처리되도록 한다. Sync 호출(Saga Pattern).
   2. 장애격리
@@ -19,12 +19,12 @@
     : 고객이 mypage를 통해 주문과 요리, 배달의 전체 상황을 조회할수 있다(CQRS).
 
 
-  > <h4>MSAEz 로 모델링한 이벤트스토밍 결과</h4>  
+<h4>MSAEz 로 모델링한 이벤트스토밍 결과</h4>  
 http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F
 ![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93165941-4bda4580-f758-11ea-9195-bc577796b8d0.png)
 
 
-  > <h4>이벤트도출</h4>
+<h4>이벤트도출</h4>
   1. 주문됨
   2. 주문취소됨
   3. 요리재고체크됨
@@ -63,37 +63,37 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 
 <h3>체크포인트 구현</h3>
 
-><h4>1. SAGA</h4>
+<h4>1. SAGA</h4>
 * 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌 <br/>
 * 요리가 취소되는 경우 주문도 함께 취소 처리
 
-><h4>2. CQRS</h4>
+<h4>2. CQRS</h4>
 * 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
 
 
-><h4>3. Correlation</h4>
+<h4>3. Correlation</h4>
 * 주문(Order) > 요리(Cook) : menu  <br/>
 * 요리(Cook) > 배달(Delivery) : cook
 
 
-><h4>4. Request/Response</h4>
+<h4>4. Request/Response</h4>
 * 주문(Order) 취소시 Req/Res 형태로 연결
 
 
-><h4>5. Gateway</h4>
+<h4>5. Gateway</h4>
 * Gateway 접속으로 각 Microservice의 접근 루트를 통일
 ![gateway_LoadBalancer](https://user-images.githubusercontent.com/54210936/93172197-5b13c000-f765-11ea-9e31-aeb17c091f42.png)
 ![gateway_LoadBalancer_delivery](https://user-images.githubusercontent.com/54210936/93172200-5bac5680-f765-11ea-906f-d6edb1c8ec94.png)
 
 
- ><h4>6. Deploy / Pipeline</h4>
+<h4>6. Deploy / Pipeline</h4>
 * AWS 코드빌더를 통한 CI/CD 구축<br/>
 Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로드 -> Deploy 적용
 ![Deploy, Pipeline  AWS_CodeBuild](https://user-images.githubusercontent.com/54210936/93167299-50ecc400-f75b-11ea-9568-331955fb320d.jpg)
 ![Deploy, Pipeline  buildspec yaml](https://user-images.githubusercontent.com/54210936/93167305-52b68780-f75b-11ea-8d55-33f3a9f6e9e8.jpg)
 
 
-  ><h4>7, 8. CircuitBreaker / Autoscale(HPA)</h4>
+<h4>7, 8. CircuitBreaker / Autoscale(HPA)</h4>
 * 안정적인 주문(Order) 서비스를 위해 CircuitBreaker를 설정하여 서비스가 유지될 수 있도록 지정한다. 500 Error가 발생하면 1초마다 스캔하여 10분간 CircuitBreak 처리. 
 * 주문(Order)에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. CPU 사용률이 10% 초과시 Replica를 5까지 늘리도록 설정 함.
 
@@ -121,7 +121,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
 
-><h4> 9. Zero-down Time Deploy</h4>
+<h4> 9. Zero-down Time Deploy</h4>
 >+ Zero down Time setting
 >+ Image 변경 시 
 ![ZeroDownTime  yaml Setting](https://user-images.githubusercontent.com/54210936/93168241-59de9500-f75d-11ea-85b6-1b87b09359ab.jpg)
@@ -139,7 +139,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 ![ZeroDownTime  console - pod describe](https://user-images.githubusercontent.com/54210936/93168825-bc846080-f75e-11ea-91d8-bd8e9aa9dadd.jpg)
 
 
-><h4> 10. PersistenceVolume</h4>
+<h4> 10. PersistenceVolume</h4>
 >+ 각 Microservice의 Log를 기록하기 위해 사용  <br/>
 >+ PVC 사용을 위한 yaml 세팅
 ![PVC  yaml Setting](https://user-images.githubusercontent.com/54210936/93169153-711e8200-f75f-11ea-901d-d168a01284a3.jpg)
@@ -148,7 +148,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93169149-6f54be80-f75f-11ea-8d97-28e3720c82e1.jpg)
 
 
-><h4> 12. SelfHealing</h4>
+<h4> 12. SelfHealing</h4>
 >+ SelfHealing 적용을 위한 Replica와 liveness 세팅 값                                                                                     
 ![KakaoTalk_20200915_150627075](https://user-images.githubusercontent.com/54210936/93172478-e68d5100-f765-11ea-9321-9f960f245d83.jpg)
 ![KakaoTalk_20200915_150634479](https://user-images.githubusercontent.com/54210936/93172487-e7be7e00-f765-11ea-9e33-eb6c8fb5875c.jpg)
