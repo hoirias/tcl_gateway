@@ -88,8 +88,8 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 
 
 <h4>7, 8. CircuitBreaker / Autoscale(HPA)</h4>
-* 안정적인 주문(Order) 서비스를 위해 CircuitBreaker를 설정하여 서비스가 유지될 수 있도록 지정한다. 500 Error가 발생하면 1초마다 스캔하여 10분간 CircuitBreak 처리. 
-* 주문(Order)에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. CPU 사용률이 10% 초과시 Replica를 5까지 늘리도록 설정 함.
+* 안정적인 주문(Order) 서비스를 위해 CircuitBreaker를 설정하여 서비스가 유지될 수 있도록 지정한다. 500 Error가 발생하면 1초마다 스캔하여 10분간 CircuitBreak 처리.</br>
+* 주문(Order)에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. CPU 사용률이 10% 초과시 Replica를 5까지 늘리도록 설정 함.</br>
 
 <pre><code>
     ##CircuitBreaker 설정
@@ -115,7 +115,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
       scaleTargetRef:
       apiVersion: apps/v1
       kind: Deployment
-      name: $_PROJECT_NAME            # order (주문) 서비스 HPA 설정
+      name: $_PROJECT_NAME           # order (주문) 서비스 HPA 설정
       minReplicas: 3                 # 최소 3개
       maxReplicas: 5                 # 최대 5개
 </code></pre>
