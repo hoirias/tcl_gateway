@@ -1,6 +1,6 @@
 # Restaurant 
 
-음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA 입니다.
+음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발
 
 # Table of contents
 
@@ -23,7 +23,7 @@
 
 # 서비스 시나리오
 
-숙소 공유 서비스 커버하기
+음식을 주문하고, 요리현황 및 배달현황을 조회
 
 ## 기능적 요구사항
 
@@ -63,33 +63,27 @@
 
   * 고객의 주문(Order), 식당의 요리(Cook), 배달(Delivery)은 그와 연결된 command와 event 들에 의하여 트랙잭션이 유지되어야 하는 단위로 그들끼리 묶어 줌 
 
-### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
+### Policy 부착 
 
-### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
+### Policy와 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Res)
 
 ### 기능적 요구사항 검증
+ * 고객이 메뉴를 주문한다.(ok)
+ * 주문된 주문정보를 레스토랑으로 전달한다.(ok)
+ * 주문정보를 바탕으로 요리가 시작된다.(ok)
+ * 요리가 완료되면 배달이 시작된다.(ok)
+ * 고객은 본인의 주문을 취소할 수 있다.(ok)
+ * 주문이 취소되면 요리를 취소한다.(ok)
+ * 주문이 취소되면, 요리취소 내용을 고객에게 전달한다.(ok)
+ * 고객이 주문 시 재고량을 체크한다.(ok)
+ * 재고가 없을 경우 주문이 취소된다.(ok)
+ * 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.(ok)
 
-  * 호스트가 본인이 등록한 숙소 목록을 조회한다. (ok)
-  * 호스트가 속소를 신규 공유한다. (ok)
-  * 호스트가 숙소 정보를 변경한다. (ok)
-  * 호스트가 숙소 공유를 중단한다. (ok)
-  * 게스트가 숙소를 선택하여 사용 예약한다. (ok)
-  * 게스트가 결제한다. (ok)
-  * 결제가 완료되면, 결제 & 예약 내용을 게스트에게 전달한다. (ok)
-  * 예약 내역을 호스트에게 전달한다. (ok)
-  * 게스트는 본인의 예약 내용 및 상태를 조회한다. (ok)
-  * 게스트는 본인의 예약을 취소할 수 있다. (ok)
-  * 예약이 취소되면, 결제를 취소한다. (ok)
-  * 결제가 취소되면, 결제 취소 내용을 게스트에게 전달한다. (ok)
-  * 게스트는 사용한 숙소의 사용 후기를 작성할 수 있다. (ok)
-  * 게스트가 사용한 숙소의 사용 후기를 작성한다. (ok)
-  * 숙소 사용 후기가 등록되면, 사용 금액의 1%를 마일리지로 적립한다. (ok)
-  * 마일리지가 적립되면, 적립 내용을 게스트에게 전달한다. (ok)
 
 
 # 구현:
 
-분석/설계 단계에서 도출된 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트 JAVA로 구현하였다. 각 마이크로 서비스들은 Kafka와 RestApi로 연동되어 지며, H2 DB를 사용한다.
+분석/설계 단계에서 도출된 아키텍처에 따라, 각 BC별로 대변되는 마이크로서비스들을 스프링부트 JAVA로 구현하였다. 각 마이크로서비스들은 Kafka와 RestApi로 연동되어 지며,스프링부트의 내부 H2 DB를 사용한다.
 
 
 ## DDD 의 적용
@@ -116,41 +110,6 @@ public class Order {
     private Integer qty;
     private Long modifiedDate;
     private String status;
-
-    @PrePersist
-    public void onPrePersist(){
-
-        if(!"ORDER : COOK CANCELED".equals(this.getStatus())){
-            this.setStatus("ORDER : ORDERED");
-        }
-        this.setModifiedDate(System.currentTimeMillis());
-    }
-
-    @PostPersist
-    public void onPostPersist(){
-        Ordered ordered = new Ordered();
-        BeanUtils.copyProperties(this, ordered);
-        System.out.println(ordered.getStatus()+ "#######################33");
-        if(!"ORDER : COOK CANCELED".equals(ordered.getStatus())){
-            ordered.publishAfterCommit();
-        }
-    }
-
-    @PreRemove
-    public void onPreRemove(){
-        OrderCancelled orderCancelled = new OrderCancelled();
-        this.setStatus("ORDER : ORDER CANCELED");
-        BeanUtils.copyProperties(this, orderCancelled);
-        orderCancelled.publishAfterCommit();
-        myProject_LSP.external.Cancellation cancellation = new myProject_LSP.external.Cancellation();
-        cancellation.setOrderId(this.getId());
-        BeanUtils.copyProperties(this, cancellation);
-
-
-        OrderApplication.applicationContext.getBean(myProject_LSP.external.CancellationService.class)
-            .cancel(cancellation);
-
-    }
     
     public Long getId() {
         return id;
@@ -205,7 +164,7 @@ public class Order {
 
 
 ```
-- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
+- JPA를 활용한 Repository Pattern을 적용하여 이후 데이터소스 유형이 변경되어도 별도의 처리가 없도록 Spring Data REST 의 RestRepository 를 적용하였다
 ```
 package myProject_LSP;
 
@@ -215,27 +174,13 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 
 }
 ```
-- 적용 후 REST API 의 테스트
-```
-# 숙소 서비스의 등록처리
-http localhost:8081/숙소s room="풀빌라"
 
-# 예약 서비스의 예약처리
-http localhost:8082/예약s roomId=1 
-
-# 결제 서비스의 결제처리
-http localhost:8083/결제s 예약ID=1
-
-# 예약 상태 확인
-http localhost:8082/예약s/1
-
-```
 
 ## 동기식 호출 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출.
 
-- 결제 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
+- 요리(cook) 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
 @FeignClient(name="cook", url="${api.url.cook}")
@@ -248,117 +193,58 @@ public interface CancellationService {
 
 ```
 
-- 주문을 받은 직후(@PrePersist) 제고를 체크하고, 이상이 없을 경우 (@PostPersist) 요리를 요청하도록 처리
+- 주문이 취소 될 경우 Cancellation 현황에 취소 내역을 접수한다.
 ```
-
-  @PrePersist
-  public void onPrePersist(){
-      // 요리를 할 수 있는 재고가 없을 때 요리를 시작한다
-      if(this.getQty() <= 0) {
-         this.setStatus("COOK : QTY OVER");
-         flowchk = false;
-      }
-  }
-  @PostPersist
-  public void onPostPersist(){
-     if(flowchk) {   // 요리를 할 수 있는 재고가 있을 때 요리를 시작한다
-        Cooked cooked = new Cooked();
-        BeanUtils.copyProperties(this, cooked);
-        this.setStatus("COOK : ORDER RECEIPT");
-        this.qty--;
-        cooked.publishAfterCommit();
-      }else{
-        CookQtyChecked cookQtyChecked = new CookQtyChecked();
-        BeanUtils.copyProperties(this, cookQtyChecked);
-        cookQtyChecked.publishAfterCommit();
-     }
-   }
+    @PrePersist
+    public void onPrePersist(){
+        CookCancelled cookCancelled = new CookCancelled();
+        BeanUtils.copyProperties(this, cookCancelled);
+        cookCancelled.setStatus("COOK : ORDER CANCELED");
+        cookCancelled.publishAfterCommit();
 
 ```
 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 주문 시스템 장애시, 주문취소가 안된다는 것을 확인함
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
-결제가 이루어진 후에 알림 처리는 동기식이 아니라 비 동기식으로 처리하여 알림 시스템의 처리를 위하여 예약이 블로킹 되지 않아도록 처리한다.
+주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
+요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 오더로 비동기식 요리 불가 발행(publish).
  
-- 이를 위하여 예약관리, 결제관리에 기록을 남긴 후에 곧바로 완료되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
 ```
-package mybnb;
-
 @Entity
-@Table(name="결제관리_table")
-public class 결제관리 {
+@Table(name="Cook_table")
+public class Cook {
+    private boolean flowchk = true;
+    ....
+    @PostPersist
+    public void onPostPersist(){
+        if(flowchk) {   // 요리를 할 수 있는 재고가 있을 때 요리를 시작한다
+            Cooked cooked = new Cooked();
+            BeanUtils.copyProperties(this, cooked);
+            this.setStatus("COOK : ORDER RECEIPT");
+            this.qty--;
+            cooked.publishAfterCommit();
+        }else{
+            CookQtyChecked cookQtyChecked = new CookQtyChecked();
+            BeanUtils.copyProperties(this, cookQtyChecked);
+            cookQtyChecked.publishAfterCommit();
 
- ...
+        }
+
+    }
+
     @PrePersist
     public void onPrePersist(){
-        결제승인됨 결제승인됨 = new 결제승인됨();
-        BeanUtils.copyProperties(this, 결제승인됨);
-        결제승인됨.publish();
-    }
-
-}
-```
-
-- 알림 서비스에서는 예약완료, 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
-```
-@Service
-public class PolicyHandler{
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whenever예약됨_알림처리(@Payload 예약됨 예약됨){
-        if(예약됨.isMe()){
-            System.out.println("##### listener 예약됨 알림처리 : " + 예약됨.toJson());
+        // 요리를 할 수 있는 재고가 없을 때 요리를 시작한다
+        if(this.getQty() <= 0) {
+            this.setStatus("COOK : QTY OVER");
+            flowchk = false;
         }
     }
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whenever결제승인됨_알림처리(@Payload 결제승인됨 결제승인됨){
-        if(결제승인됨.isMe()){
-            System.out.println("##### listener 결제승인됨 알림처리 : " + 결제승인됨.toJson());
-        }
-    }
-    
 }
-```
-
-- 실제 구현을 하자면, 카톡 등으로 알림을 처리합니다.:
-```
-  @Autowired 알림이력Repository 알림이력Repository;
-  
-  @StreamListener(KafkaProcessor.INPUT)
-  public void whenever결제승인됨_알림처리(@Payload 결제승인됨 결제승인됨){
-
-      if(결제승인됨.isMe()){
-          카톡전송(" Mybnb 알림 : " + 결제승인됨.toString());
-
-          알림이력 알림이력 = new 알림이력();
-          알림이력.setId(결제승인됨.get예약Id());
-          알림이력Repository.save(알림이력);
-      }
-  }
-
-```
-
-알림 시스템은 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 알림 시스템이 유지보수로 인해 잠시 내려간 상태라도 예약을 받는데 문제가 없다:
-```
-# 알림 서비스를 잠시 내려놓음 (ctrl+c)
-
-# 예약처리
-http localhost:8082/예약s roomId=1  #Fail
-http localhost:8082/예약s roomId=2  #Fail
-
-# 알림이력 확인
-http localhost:8082/알림이력s # 알림이력조회 불가
-
-# 알림 서비스 기동
-cd 알림
-mvn spring-boot:run
-
-# 알림이력 확인
-http localhost:8082/알림이력s # 알림이력조회
 ```
 
 # 운영
@@ -366,7 +252,7 @@ http localhost:8082/알림이력s # 알림이력조회
 ## CI/CD 설정
 
   * 각 구현체들은 github의 각각의 source repository 에 구성
-  * 사용 CI/CD 플랫폼은 ? 
+  * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
   
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
