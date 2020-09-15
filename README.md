@@ -46,6 +46,9 @@
 
 ><h4>5. Gateway</h4>
 - Gateway 접속으로 각 Microservice의 접근 루트를 통일
+![gateway_LoadBalancer](https://user-images.githubusercontent.com/54210936/93172197-5b13c000-f765-11ea-9e31-aeb17c091f42.png)
+![gateway_LoadBalancer_delivery](https://user-images.githubusercontent.com/54210936/93172200-5bac5680-f765-11ea-906f-d6edb1c8ec94.png)
+
 
  ><h4>6. Deploy / Pipeline</h4>
 AWS 코드빌더를 통한 CI/CD 구축.
@@ -87,5 +90,8 @@ Application에서 EFS에 기록한 Log 내역
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93169149-6f54be80-f75f-11ea-8d97-28e3720c82e1.jpg)
 
 ><h4> 12. SelfHealing</h4>
+SelfHealing 적용을 위한 Replica와 liveness 세팅 값
+![KakaoTalk_20200915_150627075](https://user-images.githubusercontent.com/54210936/93172478-e68d5100-f765-11ea-9321-9f960f245d83.jpg)
+![KakaoTalk_20200915_150634479](https://user-images.githubusercontent.com/54210936/93172487-e7be7e00-f765-11ea-9e33-eb6c8fb5875c.jpg)
 Pod kill 적용 후 다시 기동되는 내역 확인
 ![Self-healing  console test](https://user-images.githubusercontent.com/54210936/93169273-b93da480-f75f-11ea-939e-925352bc13bd.jpg)
