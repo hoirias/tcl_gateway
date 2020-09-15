@@ -31,6 +31,37 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
   4. 요리시작됨
   5. 배달시작됨
 
+<h3>개발 현황</h3>
+1. 프로그램 개발 후 github에 commit.
+2. AWS codebuild 세팅에 따라 컴파일 후 Docker build, ECR 저장 및 Deploy(EKS)
+3. Matrix-Server를 설치. Autoscale 적용.
+4. 각 Microservice에서 동작하며 EFS에 log 파일을 기록.
+5. 각 Microservice는 kafka를 통해 pubsub 방식 통신.
+
+
+Region : ap-northeast-2
+EKS : TeamC-final
+ECR Image : 
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway
+EFS : EFS-teamc (fs-96929df7)
+CodeBuild : 
+  https://github.com/dew0327/final-cna-order/blob/master/cloudbuild.yaml
+  https://github.com/dew0327/final-cna-cook/blob/master/cloudbuild.yaml
+  https://github.com/dew0327/final-cna-delivery/blob/master/cloudbuild.yaml
+  https://github.com/dew0327/final-cna-mypage/blob/master/cloudbuild.yaml
+  https://github.com/dew0327/final-cna-gateway/blob/master/cloudbuild.yaml
+github : 
+  dew0327/final-cna-order
+  dew0327/final-cna-cook
+  dew0327/final-cna-delivery
+  dew0327/final-cna-mypage
+  dew0327/final-cna-gateway 
+
+
 <h3>체크포인트 구현</h3>
 
 ><h4>1. SAGA</h4>
