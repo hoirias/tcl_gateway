@@ -3,33 +3,33 @@
 <h3>서비스 시나리오</h3>
 
 <h4>기능적 요구사항</h4>
-  1. 고객이 주문을 하면 주문정보를 바탕으로 요리가 시작된다.
-  2. 요리가 완료되면 배달이 시작된다. 
-  3. 고객이 주문취소를 하게 되면 요리가 취소된다.
-  4. 고객이 주문 시 제고가 없을 경우 주문이 취소된다. 
-  5. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.
+  1. 고객이 주문을 하면 주문정보를 바탕으로 요리가 시작된다.   
+  2. 요리가 완료되면 배달이 시작된다.   
+  3. 고객이 주문취소를 하게 되면 요리가 취소된다.   
+  4. 고객이 주문 시 제고가 없을 경우 주문이 취소된다.   
+  5. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.   
 
 
 <h4>비기능적 요구사항</h4>
-  1. 트랜잭션
-    : 주문 취소시 요리취소가 함께 처리되도록 한다. Sync 호출(Saga Pattern).
-  2. 장애격리
-    : 주문 시스템에 장애가 발생하면 주문은 잠시뒤에 처리될 수 있도록 한다(Circuit breaker).
-  3. 성능 
-    : 고객이 mypage를 통해 주문과 요리, 배달의 전체 상황을 조회할수 있다(CQRS).
+  1. 트랜잭션   
+    : 주문 취소시 요리취소가 함께 처리되도록 한다. Sync 호출(Saga Pattern)   
+  2. 장애격리   
+    : 주문 시스템에 장애가 발생하면 주문은 잠시뒤에 처리될 수 있도록 한다(Circuit breaker)   
+  3. 성능   
+    : 고객이 mypage를 통해 주문과 요리, 배달의 전체 상황을 조회할수 있다(CQRS)   
 
 
 <h4>MSAEz 로 모델링한 이벤트스토밍 결과</h4>  
-http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F
+http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F   
 ![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93165941-4bda4580-f758-11ea-9195-bc577796b8d0.png)
 
 
 <h4>이벤트도출</h4>
-  1. 주문됨
-  2. 주문취소됨
-  3. 요리재고체크됨
-  4. 요리시작됨
-  5. 배달시작됨
+  1. 주문됨<br/> 
+  2. 주문취소됨<br/> 
+  3. 요리재고체크됨<br/> 
+  4. 요리시작됨<br/> 
+  5. 배달시작됨<br/> 
 
 <h3>개발 현황</h3>
 1. 프로그램 개발 후 github에 commit<br/> 
@@ -65,7 +65,7 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 
 <h4>1. SAGA</h4>
 * 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌 <br/>
-* 요리가 취소되는 경우 주문도 함께 취소 처리
+* 요리가 취소되는 경우 주문도 함께 취소 처리<br/> 
 
 <h4>2. CQRS</h4>
 * 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
@@ -73,17 +73,17 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 
 <h4>3. Correlation</h4>
 * 주문(Order) > 요리(Cook) : menu  <br/>
-* 요리(Cook) > 배달(Delivery) : cook
+* 요리(Cook) > 배달(Delivery) : cook<br/> 
 
 
 <h4>4. Request/Response</h4>
-* 주문(Order) 취소시 Req/Res 형태로 연결
+* 주문(Order) 취소시 Req/Res 형태로 연결<br/> 
 
 
 <h4>5. Gateway</h4>
-* Gateway 접속으로 각 Microservice의 접근 루트를 통일
-![gateway_LoadBalancer](https://user-images.githubusercontent.com/54210936/93172197-5b13c000-f765-11ea-9e31-aeb17c091f42.png)
-![gateway_LoadBalancer_delivery](https://user-images.githubusercontent.com/54210936/93172200-5bac5680-f765-11ea-906f-d6edb1c8ec94.png)
+* Gateway 접속으로 각 Microservice의 접근 루트를 통일<br/> 
+![gateway_LoadBalancer](https://user-images.githubusercontent.com/54210936/93172197-5b13c000-f765-11ea-9e31-aeb17c091f42.png)<br/> 
+![gateway_LoadBalancer_delivery](https://user-images.githubusercontent.com/54210936/93172200-5bac5680-f765-11ea-906f-d6edb1c8ec94.png)<br/> 
 
 
 <h4>6. Deploy / Pipeline</h4>
