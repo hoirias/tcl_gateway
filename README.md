@@ -204,8 +204,8 @@ public class Cook {
 ```
 # AWS codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
  http:
-   http1MaxPendingRequests: 1  # 연결을 기다리는 request 수를 1개로 제한 (Default 
-   maxRequestsPerConnection: 1 # keep alive 기능 disable
+   http1MaxPendingRequests: 1   # 연결을 기다리는 request 수를 1개로 제한 (Default 
+   maxRequestsPerConnection: 1  # keep alive 기능 disable
  outlierDetection:
   consecutiveErrors: 1          # 5xx 에러가 5번 발생하면
   interval: 1s                  # 1초마다 스캔 하여
@@ -224,75 +224,32 @@ metadata:
     scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: $_PROJECT_NAME              # order (주문) 서비스 HPA 설정
-    minReplicas: 3                             # 최소 3개
-    maxReplicas: 5                             # 최대 5개
-    targetCPUUtilizationPercentage: 10   # cpu사용율 10프로 초과 시 
+    name: $_PROJECT_NAME                # order (주문) 서비스 HPA 설정
+    minReplicas: 3                      # 최소 3개
+    maxReplicas: 5                      # 최대 5개
+    targetCPUUtilizationPercentage: 10  # cpu사용율 10프로 초과 시 
 ```    
 * 부하테스트(Siege)를 활용한 부하 적용 후 서킷브레이킹 / 오토스케일 내역을 확인한다.
 ![HPA, Circuit Breaker  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93168766-9ced3800-f75e-11ea-9d6b-fdf37591b97a.jpg)
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
 ```
-- 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 하지만, 63.55% 가 성공하였고, 46%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 
-- Retry 의 설정 (istio)
-- Availability 가 높아진 것을 확인 (siege)
+## 무정지 재배포(ZeroDowntime Deploy)
 
-### 오토스케일 아웃
-앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
-
-
-- 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
-```
-kubectl autoscale deploy pay --min=1 --max=10 --cpu-percent=15
-```
-- CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
-```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
-```
-- 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
-```
-kubectl get deploy pay -w
-```
-- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
-```
-NAME    DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-pay     1         1         1            1           17s
-pay     1         2         1            1           45s
-pay     1         4         1            1           1m
-:
-```
-- siege 의 로그를 보아도 전체적인 성공률이 높아진 것을 확인 할 수 있다. 
-```
-Transactions:		        5078 hits
-Availability:		       92.45 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
-```
-
-
-## 무정지 재배포
-
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
+* 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함
 
 - seige 로 배포작업 직전에 워크로드를 모니터링 함.
 ```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
-
-** SIEGE 4.0.5
-** Preparing 100 concurrent users for battle.
-The server is now under siege...
-
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-:
+# AWS codebuild에 설정(https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml)
+  spec:
+    replicas: 5
+    minReadySeconds: 10   # 최소 대기 시간 10초
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+      maxSurge: 1         # 1개씩 업데이트 진행
+      maxUnavailable: 0   # 업데이트 프로세스 중에 사용할 수 없는 최대 파드의 수
 
 ```
 
