@@ -29,9 +29,15 @@
   3. 요리재고체크됨
   4. 요리시작됨
   5. 배달시작됨
+  
+><h4>1. SAGA</h4>
+><h4>2. CQRS</h4>
+><h4>3. Correlation</h4>
+><h4>4. Request/Response</h4>
+><h4>5. Gateway</h4>
 
 
-  ><h4>6. Deploy / Pipeline</h4>
+ ><h4>6. Deploy / Pipeline</h4>
 AWS 코드빌더를 통한 CI/CD 구축.
 Github 소스 수정 시 자동으로 MVN 컴파일 --> DockerBuild --> ECR 업로드 --> Deploy 적용
 ![Deploy, Pipeline  AWS_CodeBuild](https://user-images.githubusercontent.com/54210936/93167299-50ecc400-f75b-11ea-9568-331955fb320d.jpg)
@@ -57,7 +63,7 @@ Image upload
 Image Change
 ![ZeroDownTime  console - pod change status](https://user-images.githubusercontent.com/54210936/93168822-bbebca00-f75e-11ea-8cf0-ab28fbddf6dd.jpg)
 
-Image 변경 중 부하 발생
+Image 변경 중 부하 발생                                                                           
 ![ZeroDownTime  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93168826-bd1cf700-f75e-11ea-801d-c83912df06b4.jpg)
 
 Image 변경적용 확인
