@@ -1,6 +1,6 @@
-# tcl_gateway
+# Team-C
 
-<h3>TeamC 서비스 시나리오</h3>
+<h3>서비스 시나리오</h3>
 
   > <h4>기능적 요구사항</h4>
   1. 고객이 주문을 하면 주문정보를 바탕으로 요리가 시작된다.
@@ -32,40 +32,39 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
   5. 배달시작됨
 
 <h3>개발 현황</h3>
-1. 프로그램 개발 후 github에 commit  
-2. AWS codebuild 세팅에 따라 컴파일 후 Docker build, ECR 저장 및 Deploy(EKS)  
-3. Matrix-Server를 설치. Autoscale 적용  
-4. 각 Microservice에서 동작하며 EFS에 log 파일을 기록  
-5. 각 Microservice는 kafka를 통해 pubsub 방식 통신  
+1. 프로그램 개발 후 github에 commit<br/> 
+2. AWS codebuild 세팅에 따라 컴파일 후 Docker build, ECR 저장 및 Deploy(EKS)<br/> 
+3. Matrix-Server를 설치. Autoscale 적용<br/> 
+4. 각 Microservice에서 동작하며 EFS에 log 파일을 기록<br/> 
+5. 각 Microservice는 kafka와 RestAPI로 통신<br/> 
 
-
-Region : ap-northeast-2  
-EKS : TeamC-final  
-ECR Image :   
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order  
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook  
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery  
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage  
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway  
-EFS : EFS-teamc (fs-96929df7)   
-CodeBuild : 
-  https://github.com/dew0327/final-cna-order/blob/master/cloudbuild.yaml  
-  https://github.com/dew0327/final-cna-cook/blob/master/cloudbuild.yaml  
-  https://github.com/dew0327/final-cna-delivery/blob/master/cloudbuild.yaml  
-  https://github.com/dew0327/final-cna-mypage/blob/master/cloudbuild.yaml  
-  https://github.com/dew0327/final-cna-gateway/blob/master/cloudbuild.yaml  
-github :   
-  dew0327/final-cna-order  
-  dew0327/final-cna-cook  
-  dew0327/final-cna-delivery  
-  dew0327/final-cna-mypage  
-  dew0327/final-cna-gateway   
++ Region : ap-northeast-2  <br/> 
++ EKS : TeamC-final  <br/> 
++ ECR Image :   
+    271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order  <br/> 
+    271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook  <br/> 
+    271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery  <br/> 
+    271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage  <br/> 
+    271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway  <br/> 
++ EFS : EFS-teamc (fs-96929df7)   <br/> 
++ CodeBuild : <br/> 
+    https://github.com/dew0327/final-cna-order/blob/master/cloudbuild.yaml  <br/> 
+    https://github.com/dew0327/final-cna-cook/blob/master/cloudbuild.yaml  <br/> 
+    https://github.com/dew0327/final-cna-delivery/blob/master/cloudbuild.yaml  <br/> 
+    https://github.com/dew0327/final-cna-mypage/blob/master/cloudbuild.yaml  <br/> 
+    https://github.com/dew0327/final-cna-gateway/blob/master/cloudbuild.yaml  <br/> 
++ github :   <br/> 
+    https://github.com/dew0327/final-cna-order/ <br/> 
+    https://github.com/dew0327/final-cna-cook/  <br/> 
+    https://github.com/dew0327/final-cna-delivery/ <br/> 
+    https://github.com/dew0327/final-cna-mypage/ <br/> 
+    https://github.com/dew0327/final-cna-gateway/  <br/> 
 
 
 <h3>체크포인트 구현</h3>
 
 ><h4>1. SAGA</h4>
->+ 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌  
+>+ 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌 <br/>
 >+ 요리가 취소되는 경우 주문도 함께 취소 처리
 
 ><h4>2. CQRS</h4>
@@ -73,7 +72,7 @@ github :
 
 
 ><h4>3. Correlation</h4>
->+ 주문(Order) > 요리(Cook) : menu  
+>+ 주문(Order) > 요리(Cook) : menu  <br/>
 >+ 요리(Cook) > 배달(Delivery) : cook
 
 
@@ -88,8 +87,8 @@ github :
 
 
  ><h4>6. Deploy / Pipeline</h4>
->+ AWS 코드빌더를 통한 CI/CD 구축.
-Github 소스 수정 시 자동으로 MVN 컴파일 --> DockerBuild --> ECR 업로드 --> Deploy 적용
+>+ AWS 코드빌더를 통한 CI/CD 구축<br/>
+Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로드 -> Deploy 적용
 ![Deploy, Pipeline  AWS_CodeBuild](https://user-images.githubusercontent.com/54210936/93167299-50ecc400-f75b-11ea-9568-331955fb320d.jpg)
 ![Deploy, Pipeline  buildspec yaml](https://user-images.githubusercontent.com/54210936/93167305-52b68780-f75b-11ea-8d55-33f3a9f6e9e8.jpg)
 
@@ -126,7 +125,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 --> DockerBuild --> ECR 업�
 
 
 ><h4> 10. PersistenceVolume</h4>
->+ 각 Microservice의 Log를 기록하기 위해 사용  
+>+ 각 Microservice의 Log를 기록하기 위해 사용  <br/>
 >+ PVC 사용을 위한 yaml 세팅
 ![PVC  yaml Setting](https://user-images.githubusercontent.com/54210936/93169153-711e8200-f75f-11ea-901d-d168a01284a3.jpg)
 
