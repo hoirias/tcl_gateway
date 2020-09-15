@@ -113,8 +113,6 @@ public class Order {
     
     ....
 }
-
-
 ```
 - JPA를 활용한 Repository Pattern을 적용하여 이후 데이터소스 유형이 변경되어도 별도의 처리가 없도록 Spring Data REST 의 RestRepository 를 적용하였다
 ```
@@ -140,7 +138,6 @@ public interface CancellationService {
   public void cancel(@RequestBody Cancellation cancellation);
 
 }
-
 ```
 
 - 주문이 취소 될 경우 Cancellation 현황에 취소 내역을 접수한다.
