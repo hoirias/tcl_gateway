@@ -61,7 +61,7 @@
 
 ### 어그리게잇으로 묶기
 
-  * 고객의 주문, 식당의 요리, 배달현황은 그와 연결된 command와 event 들에 의하여 트랙잭션이 유지되어야 하는 단위로 그들끼리 묶어 줌 
+  * 고객의 주문(Order), 식당의 요리(Cook), 배달(Delivery)은 그와 연결된 command와 event 들에 의하여 트랙잭션이 유지되어야 하는 단위로 그들끼리 묶어 줌 
 
 ### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
 
@@ -89,86 +89,129 @@
 
 # 구현:
 
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트와 파이선으로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
+분석/설계 단계에서 도출된 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트 JAVA로 구현하였다. 각 마이크로 서비스들은 Kafka와 RestApi로 연동되어 지며, H2 DB를 사용한다.
 
-```
-cd 숙소
-mvn spring-boot:run
-
-cd 예약
-mvn spring-boot:run 
-
-cd 결제
-mvn spring-boot:run  
-
-cd 알림
-mvn spring-boot:run
-```
 
 ## DDD 의 적용
 
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 결제 마이크로서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 하지만, 일부 구현에 있어서 영문이 아닌 경우는 실행이 불가능한 경우가 있기 때문에 계속 사용할 방법은 아닌것 같다. (Maven pom.xml, Kafka의 topic id, FeignClient 의 서비스 id 등은 한글로 식별자를 사용하는 경우 오류가 발생하는 것을 확인하였다)
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 주문- Order 마이크로서비스).
 
 ```
-package mybnb;
+package myProject_LSP;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 @Entity
-@Table(name="결제관리_table")
-public class 결제관리 {
+@Table(name="Order_table")
+public class Order {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private Long 예약id;
-    private Long 게스트id;
-    private Long 숙소id;
-    private Long 금액;
+    private Integer restaurantId;
+    private Integer restaurantMenuId;
+    private Integer customerId;
+    private Integer qty;
+    private Long modifiedDate;
+    private String status;
 
+    @PrePersist
+    public void onPrePersist(){
+
+        if(!"ORDER : COOK CANCELED".equals(this.getStatus())){
+            this.setStatus("ORDER : ORDERED");
+        }
+        this.setModifiedDate(System.currentTimeMillis());
+    }
+
+    @PostPersist
+    public void onPostPersist(){
+        Ordered ordered = new Ordered();
+        BeanUtils.copyProperties(this, ordered);
+        System.out.println(ordered.getStatus()+ "#######################33");
+        if(!"ORDER : COOK CANCELED".equals(ordered.getStatus())){
+            ordered.publishAfterCommit();
+        }
+    }
+
+    @PreRemove
+    public void onPreRemove(){
+        OrderCancelled orderCancelled = new OrderCancelled();
+        this.setStatus("ORDER : ORDER CANCELED");
+        BeanUtils.copyProperties(this, orderCancelled);
+        orderCancelled.publishAfterCommit();
+        myProject_LSP.external.Cancellation cancellation = new myProject_LSP.external.Cancellation();
+        cancellation.setOrderId(this.getId());
+        BeanUtils.copyProperties(this, cancellation);
+
+
+        OrderApplication.applicationContext.getBean(myProject_LSP.external.CancellationService.class)
+            .cancel(cancellation);
+
+    }
+    
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
-    public Long get예약id() {
-        return 예약id;
+    public Integer getRestaurantId() {
+        return restaurantId;
     }
-    public void set예약id(Long 예약id) {
-        this.예약id = 예약id;
+
+    public void setRestaurantId(Integer restaurantId) {
+        this.restaurantId = restaurantId;
     }
-    public Long get게스트id() {
-        return 게스트id;
+    public Integer getRestaurantMenuId() {
+        return restaurantMenuId;
     }
-    public void set게스트id(Long 게스트id) {
-        this.게스트id = 게스트id;
+
+    public void setRestaurantMenuId(Integer restaurantMenuId) {
+        this.restaurantMenuId = restaurantMenuId;
     }
-    public Long get숙소id() {
-        return 숙소id;
+    public Integer getCustomerId() {
+        return customerId;
     }
-    public void set숙소id(Long 숙소id) {
-        this.숙소id = 숙소id;
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
-    public Long get금액() {
-        return 금액;
+    public Integer getQty() {
+        return qty;
     }
-    public void set금액(Long 금액) {
-        this.금액 = 금액;
+
+    public void setQty(Integer qty) {
+        this.qty = qty;
+    }
+    public Long getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Long modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
 
 
 ```
-- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
+- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
-package mybnb;
+package myProject_LSP;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface 결제관리Repository extends PagingAndSortingRepository<결제관리, Long>{
+public interface OrderRepository extends PagingAndSortingRepository<Order, Long>{
 
 }
 ```
@@ -188,70 +231,52 @@ http localhost:8082/예약s/1
 
 ```
 
-## 폴리글랏 퍼시스턴스
-
-  * 각 마이크로서비스의 특성에 따라 데이터 저장소를 RDB, DocumentDB/NoSQL 등 다양하게 사용할 수 있지만, 시간적/환경적 특성상 모두 H2 메모리DB를 적용하였다.
-  * DocumentDB/NoSQL를 적용하는 경우는 어그리케잇인 데이터 객체에 @Entity 가 아닌 @Document로 마킹하며, 별다른 작업없이 기존의 Entity Pattern 과 Repository Pattern 적용과 데이터베이스 제품의 설정 (application.yml) 만으로 가능하다.
-
-
-## 폴리글랏 프로그래밍
-  
-  * 각 마이크로서비스의 특성에 따라 다양한 프로그래밍 언어를 사용하여 구현할 수 있지만, 시간적/환경적 특성상 Java를 이용하여 구현하였다.
-
-
 ## 동기식 호출 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 예약->결제 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
 
 - 결제 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
-@FeignClient(name="결제", url="http://결제:8083")
-public interface 결제관리Service {
+@FeignClient(name="cook", url="${api.url.cook}")
+public interface CancellationService {
 
-    @RequestMapping(method= RequestMethod.POST, path="/결제관리s"))
-    public void 결제(@RequestBody 결제관리 결제관리);
+    @RequestMapping(method= RequestMethod.GET, path="/cancellations")
+    public void cancel(@RequestBody Cancellation cancellation);
 
 }
 
 ```
 
-- 예약을 받은 직후(@PostPersist) 결제를 요청하도록 처리
+- 주문을 받은 직후(@PrePersist) 제고를 체크하고, 이상이 없을 경우 (@PostPersist) 요리를 요청하도록 처리
 ```
-@Entity
-@Table(name="예약관리_table")
-public class 예약관리 {
 
-    @PostPersist
-    public void onPostPersist(){
-        mybnb.external.결제관리 결제관리 = new mybnb.external.결제관리();
-        결제관리.set예약id(getId());
-        
-        예약Application.applicationContext.getBean(mybnb.external.결제관리Service.class)
-            .결제(결제관리);
-    }
+  @PrePersist
+  public void onPrePersist(){
+      // 요리를 할 수 있는 재고가 없을 때 요리를 시작한다
+      if(this.getQty() <= 0) {
+         this.setStatus("COOK : QTY OVER");
+         flowchk = false;
+      }
+  }
+  @PostPersist
+  public void onPostPersist(){
+     if(flowchk) {   // 요리를 할 수 있는 재고가 있을 때 요리를 시작한다
+        Cooked cooked = new Cooked();
+        BeanUtils.copyProperties(this, cooked);
+        this.setStatus("COOK : ORDER RECEIPT");
+        this.qty--;
+        cooked.publishAfterCommit();
+      }else{
+        CookQtyChecked cookQtyChecked = new CookQtyChecked();
+        BeanUtils.copyProperties(this, cookQtyChecked);
+        cookQtyChecked.publishAfterCommit();
+     }
+   }
+
 ```
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
-
-
-```
-# 결제 서비스를 잠시 내려놓음 (ctrl+c)
-
-# 예약처리
-http localhost:8082/예약s roomId=1  #Fail
-http localhost:8082/예약s roomId=2  #Fail
-
-# 결제서비스 재기동
-cd 결제
-mvn spring-boot:run
-
-# 예약처리
-http localhost:8082/예약s roomId=1  #Success
-http localhost:8082/예약s roomId=2  #Success
-```
-
-- 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
