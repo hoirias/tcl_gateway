@@ -38,22 +38,22 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 4. 각 Microservice에서 동작하며 EFS에 log 파일을 기록<br/> 
 5. 각 Microservice는 kafka와 RestAPI로 통신<br/> 
 
-+ Region : ap-northeast-2  <br/> 
-+ EKS : TeamC-final  <br/> 
-+ ECR Image :   
+* Region : ap-northeast-2  <br/> 
+* EKS : TeamC-final  <br/> 
+* ECR Image :   
     271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order  <br/> 
     271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook  <br/> 
     271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery  <br/> 
     271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage  <br/> 
     271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway  <br/> 
-+ EFS : EFS-teamc (fs-96929df7)   <br/> 
-+ CodeBuild : <br/> 
+* EFS : EFS-teamc (fs-96929df7)   <br/> 
+* CodeBuild : <br/> 
     https://github.com/dew0327/final-cna-order/blob/master/cloudbuild.yaml  <br/> 
     https://github.com/dew0327/final-cna-cook/blob/master/cloudbuild.yaml  <br/> 
     https://github.com/dew0327/final-cna-delivery/blob/master/cloudbuild.yaml  <br/> 
     https://github.com/dew0327/final-cna-mypage/blob/master/cloudbuild.yaml  <br/> 
     https://github.com/dew0327/final-cna-gateway/blob/master/cloudbuild.yaml  <br/> 
-+ github :   <br/> 
+* github :   <br/> 
     https://github.com/dew0327/final-cna-order/ <br/> 
     https://github.com/dew0327/final-cna-cook/  <br/> 
     https://github.com/dew0327/final-cna-delivery/ <br/> 
@@ -64,43 +64,57 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 <h3>체크포인트 구현</h3>
 
 ><h4>1. SAGA</h4>
->+ 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌 <br/>
->+ 요리가 취소되는 경우 주문도 함께 취소 처리
+* 주문(Order) 후 요리(Coook) 시점에 재고가 없을 경우 요리가 취소 됌 <br/>
+* 요리가 취소되는 경우 주문도 함께 취소 처리
 
 ><h4>2. CQRS</h4>
->+ 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
+* 주문(Order) / 요리(Cook) / 개발(Delivery) 현황을 모두 Mypage에서 조회 가능
 
 
 ><h4>3. Correlation</h4>
->+ 주문(Order) > 요리(Cook) : menu  <br/>
->+ 요리(Cook) > 배달(Delivery) : cook
+* 주문(Order) > 요리(Cook) : menu  <br/>
+* 요리(Cook) > 배달(Delivery) : cook
 
 
 ><h4>4. Request/Response</h4>
->+ 주문(Order) 취소시 Req/Res 형태로 연결
+* 주문(Order) 취소시 Req/Res 형태로 연결
 
 
 ><h4>5. Gateway</h4>
->+ Gateway 접속으로 각 Microservice의 접근 루트를 통일
+* Gateway 접속으로 각 Microservice의 접근 루트를 통일
 ![gateway_LoadBalancer](https://user-images.githubusercontent.com/54210936/93172197-5b13c000-f765-11ea-9e31-aeb17c091f42.png)
 ![gateway_LoadBalancer_delivery](https://user-images.githubusercontent.com/54210936/93172200-5bac5680-f765-11ea-906f-d6edb1c8ec94.png)
 
 
  ><h4>6. Deploy / Pipeline</h4>
->+ AWS 코드빌더를 통한 CI/CD 구축<br/>
+* AWS 코드빌더를 통한 CI/CD 구축<br/>
 Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로드 -> Deploy 적용
 ![Deploy, Pipeline  AWS_CodeBuild](https://user-images.githubusercontent.com/54210936/93167299-50ecc400-f75b-11ea-9568-331955fb320d.jpg)
 ![Deploy, Pipeline  buildspec yaml](https://user-images.githubusercontent.com/54210936/93167305-52b68780-f75b-11ea-8d55-33f3a9f6e9e8.jpg)
 
 
   ><h4>7, 8. CircuitBreaker / Autoscale(HPA)</h4>
+* 안정적인 주문(Order) 서비스를 위해 CircuitBreaker를 설정하여 서비스가 유지될 수 있도록 지정한다. 500 Error가 발생하면 1초마다 스캔하여 10분간 CircuitBreak 처리. 
+* 주문(Order)에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. CPU 사용률이 10% 초과시 Replica를 5까지 늘리도록 설정 함.
+
+<pre><code>
+    http:
+        http1MaxPendingRequests: 1  # 연결을 기다리는 request 수를 1개로 제한 (Default 
+        maxRequestsPerConnection: 1 # keep alive 기능 disable
+    outlierDetection:
+      consecutiveErrors: 1          # 5xx 에러가 5번 발생하면
+      interval: 1s                  # 1초마다 스캔 하여
+      baseEjectionTime: 10m         # 10분 동안 circuit breaking 처리   
+      maxEjectionPercent: 100       # 100% 로 차단
+</code></pre>
+
 >+ CircuitBreaker 설정 값
 ![Circuit Breaker  yaml Setting](https://user-images.githubusercontent.com/54210936/93168671-68797c00-f75e-11ea-926d-6de0dd8acffd.jpg)
 
 >+ 부하적용 전
 ![ZeroDownTime_HPA  AS-IS STATUS](https://user-images.githubusercontent.com/54210936/93167881-8d6cef80-f75c-11ea-853b-a3734f7af356.jpg)
 
->+ CircuitBreaker 적용되어 Availability 70% 에서 정지
+>+ CircuitBreaker 적용되어 Availability 70% 에서 정지됨
 ![HPA, Circuit Breaker  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93168766-9ced3800-f75e-11ea-9d6b-fdf37591b97a.jpg)
 
 >+ AutoscaleUp 적용됨
@@ -109,6 +123,7 @@ Github 소스 수정 시 자동으로 MVN 컴파일 -> DockerBuild -> ECR 업로
 
 ><h4> 9. Zero-down Time Deploy</h4>
 >+ Zero down Time setting
+>+ Image 변경 시 
 ![ZeroDownTime  yaml Setting](https://user-images.githubusercontent.com/54210936/93168241-59de9500-f75d-11ea-85b6-1b87b09359ab.jpg)
 
 >+ Image upload
