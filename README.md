@@ -39,15 +39,17 @@ http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76dd
 5. 각 Microservice는 kafka를 통해 pubsub 방식 통신.
 
 
-Region : ap-northeast-2
-EKS : TeamC-final
-ECR Image : 
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage
-  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway
-EFS : EFS-teamc (fs-96929df7)
+Region : ap-northeast-2  
+
+EKS : TeamC-final  
+
+ECR Image :   
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/order  
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/cook  
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/delivery  
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/mypage  
+  271153858532.dkr.ecr.ap-northeast-2.amazonaws.com/gateway  
+EFS : EFS-teamc (fs-96929df7)  
 CodeBuild : 
   https://github.com/dew0327/final-cna-order/blob/master/cloudbuild.yaml
   https://github.com/dew0327/final-cna-cook/blob/master/cloudbuild.yaml
