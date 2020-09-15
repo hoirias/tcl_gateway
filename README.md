@@ -202,37 +202,18 @@ public class Cook {
   
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
-
-주문시 결제 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
-
-- Hystrix 를 설정:  요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
+* 서킷 브레이킹 :
+주문이 과도할 경우 CB 를 통하여 장애격리. 500 에러가 5번 발생하면 10분간 CB 처리하여 100% 접속 차단
 ```
-# application.yml
-
-hystrix:
-  command:
-    # 전역설정
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-
-```
-
-- 피호출 서비스(결제) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
-```
-# 결제관리.java (Entity)
-
-    @PrePersist
-    public void onPrePersist(){  //결제이력을 저장한 후 적당한 시간 끌기
-
-        ...
-        
-        try {
-            Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+# AWS codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+ http:
+   http1MaxPendingRequests: 1  # 연결을 기다리는 request 수를 1개로 제한 (Default 
+   maxRequestsPerConnection: 1 # keep alive 기능 disable
+ outlierDetection:
+  consecutiveErrors: 1          # 5xx 에러가 5번 발생하면
+  interval: 1s                  # 1초마다 스캔 하여
+  baseEjectionTime: 10m         # 10분 동안 circuit breaking 처리   
+  maxEjectionPercent: 100       # 100% 로 차단
 ```
 
 * kubectl create deploy siege --image=apexacme/siege-nginx
