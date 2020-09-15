@@ -95,9 +95,11 @@ Github 소스 수정 시 자동으로 MVN 컴파일 --> DockerBuild --> ECR 업�
 
 
 ><h4> 10. PersistenceVolume</h4>
+>+ 각 Microservice의 Log를 기록하기 위해 사용
 >+ PVC 사용을 위한 yaml 세팅
 ![PVC  yaml Setting](https://user-images.githubusercontent.com/54210936/93169153-711e8200-f75f-11ea-901d-d168a01284a3.jpg)
->+ Application에서 EFS에 기록한 Log 내역
+
+>+ 각 Microservice에서 기록한 Log 내역 확인
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93169149-6f54be80-f75f-11ea-8d97-28e3720c82e1.jpg)
 
 
