@@ -20,10 +20,7 @@
 
 
 <h4>MSAEz 로 모델링한 이벤트스토밍 결과</h4>  
-http://labs.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/share/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F   </br>
-![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93165941-4bda4580-f758-11ea-9195-bc577796b8d0.png)
-</br>
-
+![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93179266-66201d80-f770-11ea-9530-aae4dfef7e4d.png)
 
 <h4>이벤트도출</h4>
   1. 주문됨</br>
