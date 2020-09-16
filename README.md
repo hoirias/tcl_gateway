@@ -4,7 +4,7 @@
 
 # Table of contents
 
-- [Restaurant]
+- [Restaurant](# )
   - [서비스 시나리오](#서비스-시나리오)
   - [분석/설계](#분석설계)
   - [구현:](#구현)
@@ -19,7 +19,7 @@
     - [무정지 재배포](#무정지-재배포)
     - [마이크로서비스 로깅 관리를 위한 PVC 설정](#마이크로서비스-로깅-관리를-위한-PVC-설정)
     - [SelfHealing](#SelfHealing)
-
+  - [첨부](#첨부)
 
 # 서비스 시나리오
 
@@ -355,3 +355,24 @@ livenessProbe:
   periodSeconds: 3            # 3초 주기로 livenesProbe 실행 
 ```
 ![Self-healing  console test](https://user-images.githubusercontent.com/54210936/93280338-5b16cd00-f804-11ea-9687-2d9f8cac9ff1.jpg)
+
+
+
+# 첨부
+팀프로젝트 구성을 위해 사용한 계정 정보 및 클러스터 명, Github 주소 등의 내용 공유 
+* AWS 계정 명 : TeamC
+```
+Region : ap-northeast2
+EFS : EFS-teamc (fs-96929df7)
+EKS : TeamC-final
+ECR : order / delivery / cook / mypage / gateway
+Codebuild : order / delivery / cook / mypage / gateway
+```
+* Github :</br>
+```
+https://github.com/dew0327/final-cna-gateway
+https://github.com/dew0327/final-cna-order
+https://github.com/dew0327/final-cna-delivery
+https://github.com/dew0327/final-cna-cook
+https://github.com/dew0327/final-cna-mypage
+```
