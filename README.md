@@ -256,7 +256,7 @@ server:
     https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
     https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
     https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-mypate/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-mypage/blob/master/buildspec.yml
   ```
   
 </br>
