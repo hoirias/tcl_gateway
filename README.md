@@ -234,10 +234,10 @@ server:
 
 ## AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발
 
-  * 각 구현체들은 github의 각각의 source repository 에 구성
+  * 각 구현체들은 github 각각의 source repository 에 구성
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
-  * 각 마이크로서비스의 build 스펙
+  * 각 마이크로서비스의 build 스펙</br>
     https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml
     https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
     https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
