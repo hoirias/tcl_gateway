@@ -238,7 +238,7 @@ server:
 
 # 운영
 
-## -
+## AWS를 활용한 CI/CD 환경 구축
 
   * 각 구현체들은 github 각각의 source repository 에 구성
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
