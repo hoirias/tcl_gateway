@@ -14,9 +14,9 @@
     - [Gateway](#Gateway)
     - [CQRS](#CQRS)
   - [운영](#운영)
-    - [AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발](#AWS-Codebuild와-ECR,-EKS를-활용한-Deploy-/-pipeline의-개발)
-    - [서킷 브레이킹 / 오토스케일(HPA)](서킷-브레이킹-/-오토스케일(HPA))
-    - [무정지 재배포(ZeroDowntime Deploy, Readiness Probe)](#무정지-재배포(ZeroDowntime-Deploy,-Readiness-Probe))
+    - [AWS를 활용한 CI/CD 환경 구축](#AWS를-활용한-CI-CD-환경-구축)
+    - [서킷 브레이킹과 오토스케일](서킷-브레이킹과-오토스케일)
+    - [무정지 재배포](#무정지 재배포)
     - [마이크로서비스 로깅 관리를 위한 PVC 설정](#마이크로서비스-로깅-관리를-위한-PVC-설정)
     - [SelfHealing](#SelfHealing)
 
@@ -232,13 +232,13 @@ server:
 
 
 ## CQRS
-기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.
+기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
 ![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
 
 
 # 운영
 
-## AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발
+## -
 
   * 각 구현체들은 github 각각의 source repository 에 구성
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
@@ -251,7 +251,7 @@ server:
   * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
   * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
   
-## 서킷 브레이킹 / 오토스케일(HPA)
+## 서킷 브레이킹과 오토스케일
 
 * 서킷 브레이킹 :
 주문이 과도할 경우 CB 를 통하여 장애격리. 500 에러가 5번 발생하면 10분간 CB 처리하여 100% 접속 차단
@@ -289,7 +289,7 @@ metadata:
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
 
-## 무정지 재배포(ZeroDowntime Deploy, Readiness Probe)
+## 무정지 재배포
 
 * 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함. Github에 소스가 업데이트 되면 자동으로 AWS CodeBuild에서 컴파일 하여 이미지를 ECR에 올리고 EKS에 반영.
   이후 아래 옵션에 따라 무정지 배포 적용 된다.
