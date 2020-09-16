@@ -260,27 +260,17 @@ metadata:
 ![ZeroDownTime  console - pod describe](https://user-images.githubusercontent.com/54210936/93278015-6d8e0800-f7fe-11ea-82d1-dc80b96b601c.jpg)
 
 
-- 배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
+- Readiness Probe 설정을 통한 ZeroDownTime 설정.
 ```
   readinessProbe:
-  tcpSocket:
-   port: 8080
-   initialDelaySeconds: 15      # 서비스 어플 기동 후 15초 뒤 시작
-   periodSeconds: 20            # 20초 주기로 readinessProbe 실행 
+    tcpSocket:
+      port: 8080
+      initialDelaySeconds: 15      # 서비스 어플 기동 후 15초 뒤 시작
+      periodSeconds: 20            # 20초 주기로 readinessProbe 실행 
 ```
 
 
-- 동일한 시나리오로 재배포 한 후 Availability 확인:
-```
-Transactions:		        3078 hits
-Availability:		       100 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
+- 동일한 시나리오로 재배포 한 후 Availability 확인. 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
-```
 
-배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
