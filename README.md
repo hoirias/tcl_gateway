@@ -158,6 +158,7 @@ public void onPrePersist(){
 요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 주문단계로 비동기식 요리 불가 발행(publish). 
  
 ```
+# 주문시 재고량 체크하는 Cook 로직
 @Entity
 @Table(name="Cook_table")
 public class Cook {
