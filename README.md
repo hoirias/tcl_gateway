@@ -79,7 +79,7 @@
 
 </br>
 </br>
-</br>
+
 
 
 # 구현:
@@ -123,7 +123,7 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 
 }
 ```
-
+</br>
 
 ## 동기식 호출과 Fallback 처리
 
@@ -190,6 +190,7 @@ public class Cook {
 ```
 
 </br>
+
 ## Gateway
 하나의 접점으로 서비스를 관리할 수 있는 Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
 
@@ -234,11 +235,11 @@ server:
 ![gateway_LoadBalancer_delivery (1)](https://user-images.githubusercontent.com/54210936/93281029-1e4bd580-f806-11ea-9b95-70b9985b6fde.png)
 
 </br>
+
 ## CQRS
 기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
 ![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
 
-</br>
 </br>
 </br>
 
@@ -256,7 +257,9 @@ server:
     https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml</br>
   * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
   * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
+  
 </br>
+
 ## 서킷 브레이킹과 오토스케일
 
 * 서킷 브레이킹 :
@@ -295,6 +298,7 @@ metadata:
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
 </br>
+
 ## 무정지 재배포
 
 * 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함. Github에 소스가 업데이트 되면 자동으로 AWS CodeBuild에서 컴파일 하여 이미지를 ECR에 올리고 EKS에 반영.
@@ -336,6 +340,7 @@ metadata:
 
 
 </br>
+
 ## 마이크로서비스 로깅 관리를 위한 PVC 설정
 AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
@@ -365,7 +370,7 @@ livenessProbe:
 
 </br>
 </br>
-</br>
+
 
 
 # 첨부
