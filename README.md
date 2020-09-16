@@ -14,7 +14,7 @@
     - [Gateway](#Gateway)
     - [CQRS](#CQRS)
   - [운영](#운영)
-    - [AWS를 활용한 CI,CD 환경 구축](#AWS를-활용한-CI,CD-환경-구축)
+    - [AWS를 활용한 코드 자동빌드 배포 환경 구축](#AWS를 활용한 코드 자동빌드 배포 환경 구축)
     - [서킷 브레이킹과 오토스케일](서킷-브레이킹과-오토스케일)
     - [무정지 재배포](#무정지-재배포)
     - [마이크로서비스 로깅 관리를 위한 PVC 설정](#마이크로서비스-로깅-관리를-위한-PVC-설정)
@@ -238,10 +238,9 @@ server:
 
 # 운영
 
-## AWS를 활용한 CI, CD 환경 구축
+## AWS를 활용한 코드 자동빌드 배포 환경 구축
 
-  * 각 구현체들은 github 각각의 source repository 에 구성
-  * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
+  * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐(
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
   * 각 마이크로서비스의 build 스펙</br>
     https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml</br>
