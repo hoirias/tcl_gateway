@@ -77,7 +77,10 @@
  * 재고가 없을 경우 주문이 취소된다.(ok)
  * 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.(ok)
 
-
+</br>
+</br>
+</br>
+</br>
 
 # 구현:
 
@@ -235,6 +238,10 @@ server:
 기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
 ![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
 
+</br>
+</br>
+</br>
+</br>
 
 # 운영
 
@@ -356,7 +363,10 @@ livenessProbe:
 ```
 ![Self-healing  console test](https://user-images.githubusercontent.com/54210936/93280338-5b16cd00-f804-11ea-9687-2d9f8cac9ff1.jpg)
 
-
+</br>
+</br>
+</br>
+</br>
 
 # 첨부
 팀프로젝트 구성을 위해 사용한 계정 정보 및 클러스터 명, Github 주소 등의 내용 공유 
