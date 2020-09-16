@@ -238,10 +238,10 @@ server:
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
   * 각 마이크로서비스의 build 스펙</br>
-    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml</br>
+    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml</br>
+    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml</br>
+    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml</br>
   * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
   * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
   
@@ -324,4 +324,16 @@ metadata:
 
 
 
-
+## 각 마이크로서비스의 LOGGING을 위한 PVC(PersistenceVolumeContainer)를 설정
+AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인  함
+```
+#AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+volumeMounts:  
+- mountPath: "/mnt/aws"    # ORDER서비스 로그파일 생성 경로
+  name: volume                 
+volumes:                                # 로그 파일 생성을 위한 EFS, PVC 설정 정보
+- name: volume
+  persistentVolumeClaim:
+  claimName: aws-efs  
+```
+![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
