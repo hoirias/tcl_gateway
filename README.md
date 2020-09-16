@@ -123,7 +123,7 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 
 }
 ```
-</br>
+
 
 ## 동기식 호출과 Fallback 처리
 
@@ -150,8 +150,8 @@ public void onPrePersist(){
    cookCancelled.publishAfterCommit();
 ```
 
-
 </br>
+
 ## 비동기식 호출과 Saga Pattern
 
 주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
