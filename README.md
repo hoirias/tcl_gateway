@@ -7,18 +7,19 @@
 - [Restaurant](#---)
   - [서비스 시나리오](#서비스-시나리오)
   - [분석/설계](#분석설계)
-  - [구현:](#구현-)
+  - [구현:](#구현)
     - [DDD 의 적용](#ddd-의-적용)
-    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
-    - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
-    - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
+    - [동기식 호출 과 Fallback 처리](#동기식-호출과-Fallback-처리)
+    - [비동기식 호출과 Saga Pattern](#비동기식-호출과-Saga-Pattern)
+    - [Gateway](#Gateway)
+    - [CQRS](#CQRS)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
   - [운영](#운영)
-    - [CI/CD 설정](#cicd설정)
-    - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출-서킷-브레이킹-장애격리)
-    - [오토스케일 아웃](#오토스케일-아웃)
-    - [무정지 재배포](#무정지-재배포)
-  - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
+    - [AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발](#AWS-Codebuild와-ECR,-EKS를-활용한-Deploy-/-pipeline의-개발)
+    - [서킷 브레이킹 / 오토스케일(HPA)](서킷-브레이킹-/-오토스케일(HPA))
+    - [무정지 재배포(ZeroDowntime Deploy, Readiness Probe)](#무정지-재배포(ZeroDowntime-Deploy,-Readiness-Probe))
+    - [마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정](#마이크로서비스-로깅-관리를-위한-PVC(PersistenceVolumeContainer)-설정)
+    - [SelfHealing(liveness)](#SelfHealing(liveness))
 
 
 # 서비스 시나리오
@@ -330,7 +331,7 @@ metadata:
 
 
 
-## 각 마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정
+## 마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정
 AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
