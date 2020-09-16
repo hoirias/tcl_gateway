@@ -80,7 +80,7 @@
 </br>
 </br>
 </br>
-</br>
+
 
 # 구현:
 
@@ -123,7 +123,7 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 
 }
 ```
-
+</br>
 
 ## 동기식 호출과 Fallback 처리
 
@@ -151,7 +151,7 @@ public void onPrePersist(){
 ```
 
 
-
+</br>
 ## 비동기식 호출과 Saga Pattern
 
 주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
@@ -189,7 +189,7 @@ public class Cook {
 }
 ```
 
-
+</br>
 ## Gateway
 하나의 접점으로 서비스를 관리할 수 있는 Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
 
@@ -233,7 +233,7 @@ server:
 ![gateway_LoadBalancer (1)](https://user-images.githubusercontent.com/54210936/93281154-7aaef500-f806-11ea-997d-c70dc6a81056.png)
 ![gateway_LoadBalancer_delivery (1)](https://user-images.githubusercontent.com/54210936/93281029-1e4bd580-f806-11ea-9b95-70b9985b6fde.png)
 
-
+</br>
 ## CQRS
 기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
 ![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
@@ -241,7 +241,7 @@ server:
 </br>
 </br>
 </br>
-</br>
+
 
 # 운영
 
@@ -256,7 +256,7 @@ server:
     https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml</br>
   * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
   * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
-  
+</br>
 ## 서킷 브레이킹과 오토스케일
 
 * 서킷 브레이킹 :
@@ -294,7 +294,7 @@ metadata:
 ![HPA, Circuit Breaker  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93168766-9ced3800-f75e-11ea-9d6b-fdf37591b97a.jpg)
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
-
+</br>
 ## 무정지 재배포
 
 * 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함. Github에 소스가 업데이트 되면 자동으로 AWS CodeBuild에서 컴파일 하여 이미지를 ECR에 올리고 EKS에 반영.
@@ -335,7 +335,7 @@ metadata:
 ![ZeroDownTime  SEIGE_STATUS_read](https://user-images.githubusercontent.com/54210936/93278989-1473a380-f801-11ea-8140-f7edbc2c9b6f.jpg)
 
 
-
+</br>
 ## 마이크로서비스 로깅 관리를 위한 PVC 설정
 AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
@@ -350,7 +350,7 @@ volumes:                                # 로그 파일 생성을 위한 EFS, PV
 ```
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
 
-
+</br>
 ## SelfHealing
 운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 프로세스가 죽었을 때 다시 기동됨을 확인함.
 ```
@@ -366,7 +366,7 @@ livenessProbe:
 </br>
 </br>
 </br>
-</br>
+
 
 # 첨부
 팀프로젝트 구성을 위해 사용한 계정 정보 및 클러스터 명, Github 주소 등의 내용 공유 
