@@ -53,7 +53,7 @@
 1. 주문됨
 1. 주문취소됨
 1. 요리재고체크됨
-1. 요리와료됨
+1. 요리완료
 1. 배달
 
 
@@ -112,7 +112,7 @@ public class Order {
     ....
 }
 ```
-- JPA를 활용한 Repository Pattern을 적용하여 이후 데이터소스 유형이 변경되어도 별도의 처리가 없도록 Spring Data REST 의 RestRepository 를 적용하였다
+- JPA를 활용한 Repository Pattern을 적용하여 이후 데이터소스 유형이 변경되어도 별도의 처리 없이 사용 가능한 Spring Data REST 의 RestRepository 를 적용하였다
 ```
 package myProject_LSP;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -124,8 +124,7 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 
 ## 동기식 호출 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출.
-
+분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출(Req/Res 사용).
 - 요리(cook) 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
@@ -148,13 +147,12 @@ public void onPrePersist(){
    cookCancelled.publishAfterCommit();
 ```
 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 주문 시스템 장애시 주문취소가 안된다는 것을 확인함
 
 
 ## 비동기식 호출 / 장애격리 
 
 주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
-요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 오더로 비동기식 요리 불가 발행(publish).
+요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 주문단계로 비동기식 요리 불가 발행(publish). SAGA Pattern 사용됨.
  
 ```
 @Entity
@@ -210,8 +208,9 @@ public class Cook {
   baseEjectionTime: 10m         # 10분 동안 circuit breaking 처리   
   maxEjectionPercent: 100       # 100% 로 차단
 ```
+
 * 오토스케일(HPA) :
-CPU사용률이 10% 초과 시 replica를 5개까지 확장해준다
+CPU사용률 10% 초과 시 replica를 5개까지 확장해준다. 상용에서는 70%로 세팅하지만 여기에서는 기능적용 확인을 위해 수치를 조절.
 ```
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -235,7 +234,8 @@ metadata:
 
 ## 무정지 재배포(ZeroDowntime Deploy)
 
-* 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함
+* 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함. Github에 소스가 업데이트 되면 자동으로 AWS CodeBuild에서 컴파일 하여 이미지를 ECR에 올리고 EKS에 반영.
+  이후 아래 옵션에 따라 무정지 배포 적용 된다.
 
 - seige 로 배포작업 직전에 워크로드를 모니터링 함.
 ```
