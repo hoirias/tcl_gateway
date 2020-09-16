@@ -122,9 +122,9 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 ```
 
 
-## 동기식 호출 과 Fallback 처리
+## 동기식 호출과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출(Req/Res 사용).
+분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출.
 - 요리(cook) 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
@@ -149,10 +149,10 @@ public void onPrePersist(){
 
 
 
-## 비동기식 호출 / 장애격리 
+## 비동기식 호출과 Saga Pattern
 
 주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
-요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 주문단계로 비동기식 요리 불가 발행(publish). SAGA Pattern 사용됨.
+요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 주문단계로 비동기식 요리 불가 발행(publish). 
  
 ```
 @Entity
@@ -188,7 +188,7 @@ public class Cook {
 
 
 ## Gateway
-Gateway를 통한 서비스라우팅 적용
+Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
 
 ```
 # Gateway 설정(https://github.com/dew0327/final-cna-gateway/blob/master/target/classes/application.yml)
@@ -227,7 +227,13 @@ spring:
 server:
   port: 8080
 ```
+![gateway_LoadBalancer (1)](https://user-images.githubusercontent.com/54210936/93281154-7aaef500-f806-11ea-997d-c70dc6a81056.png)
+![gateway_LoadBalancer_delivery (1)](https://user-images.githubusercontent.com/54210936/93281029-1e4bd580-f806-11ea-9b95-70b9985b6fde.png)
 
+
+## CQRS
+기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.
+![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
 
 
 # 운영
@@ -324,8 +330,8 @@ metadata:
 
 
 
-## 각 마이크로서비스의 LOGGING을 위한 PVC(PersistenceVolumeContainer)를 설정
-AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인  함
+## 각 마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정
+AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
 volumeMounts:  
@@ -339,8 +345,8 @@ volumes:                                # 로그 파일 생성을 위한 EFS, PV
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
 
 
-## SelfHealing(livness)
-운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축 
+## SelfHealing(liveness)
+운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 프로세스가 죽었을 때 다시 기동됨을 확인함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
 livenessProbe:
