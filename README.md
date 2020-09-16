@@ -337,3 +337,16 @@ volumes:                                # 로그 파일 생성을 위한 EFS, PV
   claimName: aws-efs  
 ```
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
+
+
+## SelfHealing(livness)
+운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축 
+```
+#AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+livenessProbe:
+  tcpSocket:
+  port: 8080
+  initialDelaySeconds: 20     # 서비스 어플 기동 후 20초 뒤 시작
+  periodSeconds: 3            # 3초 주기로 livenesProbe 실행 
+```
+![Self-healing  console test](https://user-images.githubusercontent.com/54210936/93280338-5b16cd00-f804-11ea-9687-2d9f8cac9ff1.jpg)
