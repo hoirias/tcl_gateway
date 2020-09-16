@@ -13,7 +13,6 @@
     - [비동기식 호출과 Saga Pattern](#비동기식-호출과-Saga-Pattern)
     - [Gateway](#Gateway)
     - [CQRS](#CQRS)
-    - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
   - [운영](#운영)
     - [AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발](#AWS-Codebuild와-ECR,-EKS를-활용한-Deploy-/-pipeline의-개발)
     - [서킷 브레이킹 / 오토스케일(HPA)](서킷-브레이킹-/-오토스케일(HPA))
