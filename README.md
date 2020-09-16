@@ -254,6 +254,49 @@ server:
 
 ## CQRS
 기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
+```
+# 주문 내역 mypage에 insert
+   @StreamListener(KafkaProcessor.INPUT)
+    public void whenOrdered_then_CREATE_1 (@Payload Ordered ordered) {
+        try {
+            if (ordered.isMe()) {
+                // view 객체 생성
+                Mypage mypage = new Mypage();
+                // view 객체에 이벤트의 Value 를 set 함
+                mypage.setRestaurantId(ordered.getRestaurantId());
+                mypage.setRestaurantMenuId(ordered.getRestaurantMenuId());
+                mypage.setCustomerId(ordered.getCustomerId());
+                mypage.setQty(ordered.getQty());
+                mypage.setOrderId(ordered.getId());
+                mypage.setOrderStatus(ordered.getStatus());
+                // view 레파지 토리에 save
+                mypageRepository.save(mypage);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+# 요리내역(Cook) mypage 업데이트
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whenCooked_then_UPDATE_1(@Payload Cooked cooked) {
+        try {
+            if (cooked.isMe()) {
+                // view 객체 조회
+                List<Mypage> mypageList = mypageRepository.findByOrderId(cooked.getOrderId());
+                for(Mypage mypage : mypageList){
+                    // view 객체에 이벤트의 eventDirectValue 를 set 함
+                    mypage.setCookId(cooked.getId());
+                    mypage.setCookStatus(cooked.getStatus());
+                    // view 레파지 토리에 save
+                    mypageRepository.save(mypage);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+ ```
 ![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
 
 </br>
