@@ -186,12 +186,64 @@ public class Cook {
 }
 ```
 
+
+## Gateway
+Gateway를 통한 서비스라우팅 적용
+
+```
+# Gateway 설정(https://github.com/dew0327/final-cna-gateway/blob/master/target/classes/application.yml)
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: order
+          uri: http://order:8080
+          predicates:
+            - Path=/orders/**
+        - id: cook
+          uri: http://cook:8080
+          predicates:
+            - Path=/cooks/**,/cancellations/**
+        - id: delivery
+          uri: http://delivery:8080
+          predicates:
+            - Path=/deliveries/**
+        - id: mypage
+          uri: http://mypage:8080
+          predicates:
+            - Path= /mypages/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+```
+
+
+
 # 운영
 
-## CI/CD 설정
+## AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발
 
   * 각 구현체들은 github의 각각의 source repository 에 구성
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐
+  * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
+  * 각 마이크로서비스의 build 스펙
+    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml
+  * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
+  * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
   
 ## 서킷 브레이킹 / 오토스케일(HPA)
 
