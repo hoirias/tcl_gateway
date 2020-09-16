@@ -187,6 +187,21 @@ public class Cook {
         }
     }
 }
+
+...
+# 주문서비스의 Cancel 설정
+    @Autowired
+    OrderRepository orderRepository;
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverCookQtyChecked_CookCancelUpdate(@Payload CookQtyChecked cookQtyChecked){
+        if(cookQtyChecked.isMe()){
+            Optional<Order> orderOptional = orderRepository.findById(cookQtyChecked.getOrderId());
+            Order order = orderOptional.get();
+            order.setStatus("ORDER : QTY OVER CANCELED");
+            orderRepository.save(order);
+        }
+    }
 ```
 
 </br>
