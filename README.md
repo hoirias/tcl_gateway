@@ -1,4 +1,4 @@
-# Restaurant 
+# Intensive Lv2. TeamC
 
 음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발
 
