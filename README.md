@@ -17,8 +17,8 @@
     - [AWS Codebuild와 ECR, EKS를 활용한 Deploy / pipeline의 개발](#AWS-Codebuild와-ECR,-EKS를-활용한-Deploy-/-pipeline의-개발)
     - [서킷 브레이킹 / 오토스케일(HPA)](서킷-브레이킹-/-오토스케일(HPA))
     - [무정지 재배포(ZeroDowntime Deploy, Readiness Probe)](#무정지-재배포(ZeroDowntime-Deploy,-Readiness-Probe))
-    - [마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정](#마이크로서비스-로깅-관리를-위한-PVC(PersistenceVolumeContainer)-설정)
-    - [SelfHealing(liveness)](#SelfHealing(liveness))
+    - [마이크로서비스 로깅 관리를 위한 PVC 설정](#마이크로서비스-로깅-관리를-위한-PVC-설정)
+    - [SelfHealing](#SelfHealing)
 
 
 # 서비스 시나리오
@@ -330,7 +330,7 @@ metadata:
 
 
 
-## 마이크로서비스 로깅 관리를 위한 PVC(PersistenceVolumeContainer) 설정
+## 마이크로서비스 로깅 관리를 위한 PVC 설정
 AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
@@ -345,7 +345,7 @@ volumes:                                # 로그 파일 생성을 위한 EFS, PV
 ![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
 
 
-## SelfHealing(liveness)
+## SelfHealing
 운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 프로세스가 죽었을 때 다시 기동됨을 확인함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
