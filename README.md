@@ -393,8 +393,8 @@ metadata:
   readinessProbe:
     tcpSocket:
       port: 8080
-      initialDelaySeconds: 15      # 서비스 어플 기동 후 15초 뒤 시작
-      periodSeconds: 20            # 20초 주기로 readinessProbe 실행 
+      initialDelaySeconds: 180      # 서비스 어플 기동 후 180초 뒤 시작
+      periodSeconds: 120            # 120초 주기로 readinessProbe 실행 
 ```
 ![ZeroDownTime  SEIGE_STATUS_read](https://user-images.githubusercontent.com/54210936/93278989-1473a380-f801-11ea-8140-f7edbc2c9b6f.jpg)
 
