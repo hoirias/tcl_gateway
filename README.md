@@ -188,7 +188,7 @@ public class Cook {
 
 
 ## Gateway
-Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
+하나의 접점으로 서비스를 관리할 수 있는 Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
 
 ```
 # Gateway 설정(https://github.com/dew0327/final-cna-gateway/blob/master/target/classes/application.yml)
@@ -240,7 +240,7 @@ server:
 
 ## AWS를 활용한 코드 자동빌드 배포 환경구축
 
-  * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐(
+  * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐.
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
   * 각 마이크로서비스의 build 스펙</br>
     https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml</br>
