@@ -250,13 +250,14 @@ server:
 
   * AWS codebuild를 설정하여 github이 업데이트 되면 자동으로 빌드 및 배포 작업이 이루어짐.
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
-  * 각 마이크로서비스의 build 스펙</br>
+  * 각 마이크로서비스의 build 스펙
+  ```
     https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml</br>
     https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml</br>
     https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml</br>
     https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml</br>
-  * AWS Codebuild의 한국리전에 설정됨(order, cook, delivery, gateway 임)
-  * EKS - TeamC-final, ECR - order, cook, delivery, gateway로 설정됨
+    https://github.com/dew0327/final-cna-mypate/blob/master/buildspec.yml</br>
+  ```
   
 </br>
 
