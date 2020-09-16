@@ -231,7 +231,7 @@ metadata:
 ![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
 
 
-## 무정지 재배포(ZeroDowntime Deploy)
+## 무정지 재배포(ZeroDowntime Deploy, Readiness Probe)
 
 * 무정지 배포를 위해 ECR 이미지를 업데이트 하고 이미지 체인지를 시도 함. Github에 소스가 업데이트 되면 자동으로 AWS CodeBuild에서 컴파일 하여 이미지를 ECR에 올리고 EKS에 반영.
   이후 아래 옵션에 따라 무정지 배포 적용 된다.
@@ -268,6 +268,7 @@ metadata:
       initialDelaySeconds: 15      # 서비스 어플 기동 후 15초 뒤 시작
       periodSeconds: 20            # 20초 주기로 readinessProbe 실행 
 ```
+![ZeroDownTime  SEIGE_STATUS_read](https://user-images.githubusercontent.com/54210936/93278989-1473a380-f801-11ea-8140-f7edbc2c9b6f.jpg)
 
 
 
