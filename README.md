@@ -252,11 +252,11 @@ server:
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
   * 각 마이크로서비스의 build 스펙
   ```
-    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml</br>
-    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml</br>
-    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml</br>
-    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml</br>
-    https://github.com/dew0327/final-cna-mypate/blob/master/buildspec.yml</br>
+    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml
+    https://github.com/dew0327/final-cna-mypate/blob/master/buildspec.yml
   ```
   
 </br>
